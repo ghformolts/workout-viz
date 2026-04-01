@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Push Day • Workout Viz</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script type="importmap">
+    {
+        "imports": {
+            "preact": "https://esm.sh/preact@10.19.3",
+            "preact/hooks": "https://esm.sh/preact@10.19.3/hooks",
+            "htm/preact": "https://esm.sh/htm@3.1.1/preact?external=preact"
+        }
+    }
+    </script>
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: #1a1a24;
+            --bg-elevated: #252532;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --text-muted: #6a6a7a;
+            --accent-primary: #ff6b35;
+            --accent-secondary: #f7931e;
+            --accent-tertiary: #ffcc00;
+            --accent-blue: #00d4ff;
+            --accent-purple: #a855f7;
+            --accent-green: #22c55e;
+            --accent-red: #ef4444;
+            --gradient-heat-1: #3b82f6;
+            --gradient-heat-2: #8b5cf6;
+            --gradient-heat-3: #f59e0b;
+            --gradient-heat-4: #ef4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; }
+        #app { min-height: 100vh; }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.05); opacity: 0.8; } }
+        @keyframes heartbeat { 0%, 100% { transform: scale(1); } 10%, 30% { transform: scale(1.1); } 20%, 40% { transform: scale(1); } }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes barGrow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+        @keyframes pathDraw { to { stroke-dashoffset: 0; } }
+        @keyframes glow { 0%, 100% { box-shadow: 0 0 20px rgba(255,107,53,0.3); } 50% { box-shadow: 0 0 40px rgba(255,107,53,0.6); } }
+
+        .container { max-width: 480px; margin: 0 auto; padding: 0 16px; }
+        .header { padding: 24px 0; text-align: center; }
+        .header-badge { display: inline-flex; align-items: center; gap: 6px; background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); color: white; padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; animation: fadeInUp 0.5s ease-out; }
+        .header-badge::before { content: ''; width: 6px; height: 6px; background: white; border-radius: 50%; animation: pulse 2s infinite; }
+        .header-title { font-size: 32px; font-weight: 800; letter-spacing: -1px; margin-bottom: 4px; animation: fadeInUp 0.5s ease-out 0.1s both; }
+        .header-subtitle { color: var(--text-secondary); font-size: 14px; animation: fadeInUp 0.5s ease-out 0.2s both; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; animation: fadeInUp 0.5s ease-out 0.3s both; }
+        .stat-card { background: var(--bg-card); border-radius: 16px; padding: 16px 12px; text-align: center; border: 1px solid rgba(255,255,255,0.05); transition: transform 0.2s; }
+        .stat-card:hover { transform: translateY(-2px); }
+        .stat-value { font-size: 24px; font-weight: 800; background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .stat-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+
+        .section { margin-bottom: 24px; animation: fadeInUp 0.5s ease-out both; }
+        .section-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .section-title::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--bg-elevated), transparent); }
+
+        .card { background: var(--bg-card); border-radius: 20px; padding: 20px; border: 1px solid rgba(255,255,255,0.05); }
+
+        .hr-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+        .hr-title { display: flex; align-items: center; gap: 10px; }
+        .hr-icon { width: 40px; height: 40px; background: linear-gradient(135deg, #ef4444, #f97316); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; animation: heartbeat 1.2s infinite; }
+        .hr-text h3 { font-size: 16px; font-weight: 700; }
+        .hr-text span { font-size: 12px; color: var(--text-muted); }
+        .hr-avg { text-align: right; }
+        .hr-avg-value { font-size: 28px; font-weight: 800; color: #ef4444; }
+        .hr-avg-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; }
+        .hr-chart { height: 120px; margin-bottom: 16px; }
+        .hr-chart svg { width: 100%; height: 100%; overflow: visible; }
+        .hr-chart-path { fill: none; stroke: url(#hrGradient); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1000; stroke-dashoffset: 1000; animation: pathDraw 2s ease-out forwards; }
+        .hr-chart-area { fill: url(#hrGradientArea); opacity: 0.3; }
+        .hr-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .hr-stat { text-align: center; padding: 10px 6px; background: var(--bg-elevated); border-radius: 12px; }
+        .hr-stat-value { font-size: 14px; font-weight: 700; }
+        .hr-stat-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; }
+
+        .volume-chart { display: flex; align-items: flex-end; justify-content: space-around; height: 140px; padding: 10px 0; gap: 8px; }
+        .volume-bar-group { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        .volume-bars { display: flex; align-items: flex-end; gap: 3px; height: 100px; width: 100%; justify-content: center; }
+        .volume-bar { width: 100%; max-width: 14px; border-radius: 4px 4px 0 0; transition: all 0.3s; transform-origin: bottom; animation: barGrow 0.6s ease-out backwards; }
+        .volume-bar:hover { filter: brightness(1.2); transform: scaleX(1.1); }
+        .volume-bar.set1 { background: linear-gradient(180deg, var(--gradient-heat-1), #60a5fa); }
+        .volume-bar.set2 { background: linear-gradient(180deg, var(--gradient-heat-2), #a78bfa); }
+        .volume-bar.set3 { background: linear-gradient(180deg, var(--gradient-heat-3), #fbbf24); }
+        .volume-label { font-size: 10px; color: var(--text-muted); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+
+        .flow-container { position: relative; padding-left: 24px; }
+        .flow-line { position: absolute; left: 8px; top: 0; bottom: 0; width: 3px; background: linear-gradient(180deg, var(--accent-primary), var(--accent-secondary), var(--accent-tertiary)); border-radius: 2px; }
+        .exercise-node { position: relative; padding: 16px 0; animation: slideIn 0.4s ease-out backwards; }
+        .exercise-node::before { content: ''; position: absolute; left: -20px; top: 20px; width: 12px; height: 12px; background: var(--bg-card); border: 3px solid var(--accent-primary); border-radius: 50%; z-index: 1; transition: all 0.3s; }
+        .exercise-node:hover::before { background: var(--accent-primary); box-shadow: 0 0 15px var(--accent-primary); transform: scale(1.2); }
+        .exercise-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+        .exercise-icon { width: 44px; height: 44px; background: var(--bg-elevated); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; transition: transform 0.3s; }
+        .exercise-node:hover .exercise-icon { transform: scale(1.1) rotate(-5deg); }
+        .exercise-info h4 { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+        .exercise-info span { font-size: 12px; color: var(--text-muted); }
+        .exercise-sets { display: flex; gap: 8px; flex-wrap: wrap; }
+        .set-badge { display: inline-flex; align-items: center; gap: 4px; background: var(--bg-elevated); padding: 6px 10px; border-radius: 8px; font-size: 12px; font-weight: 600; transition: all 0.2s; }
+        .set-badge:hover { background: rgba(255,255,255,0.1); transform: translateY(-1px); }
+        .set-weight { color: var(--accent-tertiary); }
+        .set-reps { color: var(--text-secondary); font-size: 11px; }
+
+        .heatmap { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+        .heatmap-cell { aspect-ratio: 1; border-radius: 6px; transition: all 0.3s; position: relative; }
+        .heatmap-cell:hover { transform: scale(1.15); z-index: 1; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+        .heatmap-legend { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 16px; font-size: 11px; color: var(--text-muted); }
+        .heatmap-gradient { width: 100px; height: 8px; background: linear-gradient(90deg, var(--gradient-heat-1), var(--gradient-heat-2), var(--gradient-heat-3), var(--gradient-heat-4)); border-radius: 4px; }
+
+        .share-card { background: linear-gradient(135deg, var(--bg-card), var(--bg-secondary)); border: 2px solid transparent; background-clip: padding-box; position: relative; overflow: hidden; }
+        .share-card::before { content: ''; position: absolute; inset: -2px; background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary), var(--accent-tertiary)); border-radius: 22px; z-index: -1; }
+        .share-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+        .share-avatar { width: 48px; height: 48px; background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 800; }
+        .share-user h3 { font-size: 16px; font-weight: 700; }
+        .share-user span { font-size: 12px; color: var(--text-muted); }
+        .share-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+        .share-stat { background: rgba(255,255,255,0.05); padding: 16px; border-radius: 16px; text-align: center; }
+        .share-stat-value { font-size: 24px; font-weight: 800; background: linear-gradient(135deg, var(--accent-primary), var(--accent-tertiary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .share-stat-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+        .share-quote { font-size: 18px; font-weight: 700; text-align: center; padding: 20px; background: rgba(255,255,255,0.03); border-radius: 16px; font-style: italic; line-height: 1.5; }
+        .share-footer { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 12px; color: var(--text-muted); }
+        .share-logo { width: 20px; height: 20px; background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; }
+
+        .share-button { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); border: none; border-radius: 14px; color: white; font-size: 15px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s; margin-top: 16px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .share-button:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(255,107,53,0.4); }
+
+        .tabs { display: flex; gap: 8px; margin-bottom: 20px; background: var(--bg-card); padding: 6px; border-radius: 14px; }
+        .tab { flex: 1; padding: 10px 16px; background: transparent; border: none; border-radius: 10px; color: var(--text-muted); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .tab.active { background: var(--bg-elevated); color: var(--text-primary); box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+
+        @media (max-width: 380px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .hr-stats { grid-template-columns: repeat(2, 1fr); }
+            .volume-chart { gap: 4px; }
+            .volume-bar { max-width: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+    <script type="module">
+        import { h, render } from 'preact';
+        import { useState } from 'preact/hooks';
+        import htm from 'https://esm.sh/htm@3.1.1';
+        const html = htm.bind(h);
+
+        const workoutData = {
+            date: 'Apr 1, 2025',
+            type: 'Push Day',
+            exercises: [
+                { name: 'Push Ups', icon: '💪', sets: [{ weight: 'BW', reps: 25 }, { weight: 'BW', reps: 25 }], intensity: 0.6 },
+                { name: 'Chest Press', icon: '🏋️', sets: [{ weight: '25kg', reps: 15, volume: 375 }, { weight: '30kg', reps: 15, volume: 450 }, { weight: '34kg', reps: 15, volume: 510 }], intensity: 0.85 },
+                { name: 'Cable Fly', icon: '🎯', sets: [{ weight: '2.5kg', reps: 15, volume: 37.5 }, { weight: 'BW', reps: 15, volume: 0 }, { weight: 'BW', reps: 15, volume: 0 }], intensity: 0.7 },
+                { name: 'Arnold Press', icon: '🦾', sets: [{ weight: '10lbs', reps: 15, volume: 150 }, { weight: '15lbs', reps: 15, volume: 225 }, { weight: '15lbs', reps: 15, volume: 225 }], intensity: 0.75 },
+                { name: 'Lateral Raises', icon: '⚡', sets: [{ weight: '5lbs', reps: 15, volume: 75 }, { weight: '10lbs', reps: 15, volume: 150 }, { weight: '15+10lbs', reps: '8+8', volume: 200 }], intensity: 0.8 },
+                { name: 'Tricep Extension', icon: '🔥', sets: [{ weight: '20lbs', reps: 20, volume: 400 }, { weight: '25lbs', reps: 15, volume: 375 }, { weight: '25lbs', reps: 15, volume: 375 }], intensity: 0.78 },
+                { name: 'Tricep Kickback', icon: '💫', sets: [{ weight: '10lbs', reps: 15, volume: 150 }, { weight: '15lbs', reps: 15, volume: 225 }, { weight: '15lbs', reps: 15, volume: 225 }], intensity: 0.72 }
+            ],
+            cardio: { duration: '30:33', distance: 2.86, calories: 245, avgHR: 142, minHR: 101, maxHR: 177, incline: 2.5, climbed: 70, hrData: [101,115,128,138,145,152,158,162,165,168,170,172,174,175,177,175,172,168,162,155,148,142,135,128,120,115,110,105,103,101] }
+        };
+
+        const calculateVolume = (ex) => ex.sets.reduce((sum, s) => sum + (s.volume || 0), 0);
+        const totalVolume = workoutData.exercises.reduce((sum, ex) => sum + calculateVolume(ex), 0);
+        const totalSets = workoutData.exercises.reduce((sum, ex) => sum + ex.sets.length, 0);
+
+        const HeartRateChart = () => {
+            const data = workoutData.cardio.hrData;
+            const width = 400, height = 120, padding = 10;
+            const minHR = Math.min(...data) - 5, maxHR = Math.max(...data) + 5, range = maxHR - minHR;
+            const points = data.map((hr, i) => {
+                const x = (i / (data.length - 1)) * (width - padding * 2) + padding;
+                const y = height - ((hr - minHR) / range) * (height - padding * 2) - padding;
+                return `${x},${y}`;
+            }).join(' ');
+            const areaPoints = `${padding},${height} ${points} ${width - padding},${height}`;
+
+            return html`
+                <div class="card">
+                    <div class="hr-header">
+                        <div class="hr-title">
+                            <div class="hr-icon">❤️</div>
+                            <div class="hr-text"><h3>Cardio Session</h3><span>Treadmill Run</span></div>
+                        </div>
+                        <div class="hr-avg"><div class="hr-avg-value">${workoutData.cardio.avgHR}</div><div class="hr-avg-label">Avg BPM</div></div>
+                    </div>
+                    <div class="hr-chart">
+                        <svg viewBox="0 0 ${width} ${height}">
+                            <defs>
+                                <linearGradient id="hrGradient" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#3b82f6"/><stop offset="50%" stop-color="#a855f7"/><stop offset="100%" stop-color="#ef4444"/></linearGradient>
+                                <linearGradient id="hrGradientArea" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#ef4444" stop-opacity="0.5"/><stop offset="100%" stop-color="#3b82f6" stop-opacity="0.1"/></linearGradient>
+                            </defs>
+                            <polygon points="${areaPoints}" class="hr-chart-area"/>
+                            <polyline points="${points}" class="hr-chart-path"/>
+                        </svg>
+                    </div>
+                    <div class="hr-stats">
+                        <div class="hr-stat"><div class="hr-stat-value" style="color:#22c55e">${workoutData.cardio.duration}</div><div class="hr-stat-label">Duration</div></div>
+                        <div class="hr-stat"><div class="hr-stat-value" style="color:#00d4ff">${workoutData.cardio.distance}km</div><div class="hr-stat-label">Distance</div></div>
+                        <div class="hr-stat"><div class="hr-stat-value" style="color:#f59e0b">${workoutData.cardio.calories}</div><div class="hr-stat-label">Calories</div></div>
+                        <div class="hr-stat"><div class="hr-stat-value" style="color:#ef4444">${workoutData.cardio.maxHR}</div><div class="hr-stat-label">Peak BPM</div></div>
+                    </div>
+                </div>
+            `;
+        };
+
+        const VolumeChart = () => {
+            const exercises = workoutData.exercises.filter(ex => ex.sets.some(s => s.volume)).slice(0, 6);
+            const maxVolume = Math.max(...exercises.map(ex => Math.max(...ex.sets.map(s => s.volume || 0))));
+            return html`
+                <div class="card">
+                    <div style="margin-bottom:12px"><h3 style="font-size:16px;font-weight:700">Volume Progression</h3><span style="font-size:12px;color:var(--text-muted)">Weight × Reps per set</span></div>
+                    <div class="volume-chart">
+                        ${exercises.map((ex, i) => {
+                            const volumes = ex.sets.map(s => s.volume || 0);
+                            return html`
+                                <div class="volume-bar-group" key=${i}>
+                                    <div class="volume-bars">
+                                        ${volumes.map((vol, j) => {
+                                            const height = vol > 0 ? (vol / maxVolume) * 100 : 5;
+                                            return html`<div class="volume-bar set${j+1}" style="height:${height}%;animation-delay:${(i*3+j)*0.1}s"/>`;
+                                        })}
+                                    </div>
+                                    <div class="volume-label">${ex.name.split(' ')[0]}</div>
+                                </div>
+                            `;
+                        })}
+                    </div>
+                </div>
+            `;
+        };
+
+        const ExerciseFlow = () => html`
+            <div class="card" style="padding:20px 20px 20px 28px">
+                <div style="margin-bottom:16px"><h3 style="font-size:16px;font-weight:700">Workout Flow</h3><span style="font-size:12px;color:var(--text-muted)">7 exercises • ${totalSets} sets</span></div>
+                <div class="flow-container">
+                    <div class="flow-line"/>
+                    ${workoutData.exercises.map((ex, i) => html`
+                        <div class="exercise-node" key=${i} style="animation-delay:${i*0.1}s">
+                            <div class="exercise-header">
+                                <div class="exercise-icon">${ex.icon}</div>
+                                <div class="exercise-info"><h4>${ex.name}</h4><span>${ex.sets.length} sets</span></div>
+                            </div>
+                            <div class="exercise-sets">
+                                ${ex.sets.map((set, j) => html`
+                                    <div class="set-badge" key=${j}><span class="set-weight">${set.weight}</span><span class="set-reps">×${set.reps}</span></div>
+                                `)}
+                            </div>
+                        </div>
+                    `)}
+                </div>
+            </div>
+        `;
+
+        const IntensityHeatmap = () => {
+            const getColor = (intensity) => {
+                if (intensity < 0.65) return 'linear-gradient(135deg, #3b82f6, #60a5fa)';
+                if (intensity < 0.75) return 'linear-gradient(135deg, #8b5cf6, #a78bfa)';
+                if (intensity < 0.82) return 'linear-gradient(135deg, #f59e0b, #fbbf24)';
+                return 'linear-gradient(135deg, #ef4444, #f87171)';
+            };
+            return html`
+                <div class="card">
+                    <div style="margin-bottom:16px"><h3 style="font-size:16px;font-weight:700">Intensity Heatmap</h3><span style="font-size:12px;color:var(--text-muted)">Perceived effort by exercise</span></div>
+                    <div class="heatmap">
+                        ${workoutData.exercises.map((ex, i) => html`
+                            <div class="heatmap-cell" key=${i} style="background:${getColor(ex.intensity)}" data-intensity="${Math.round(ex.intensity*100)}%"/>
+                        `)}
+                    </div>
+                    <div class="heatmap-legend"><span>Low</span><div class="heatmap-gradient"/><span>High</span></div>
+                </div>
+            `;
+        };
+
+        const ShareCard = () => html`
+            <div class="card share-card">
+                <div class="share-header">
+                    <div class="share-avatar">💪</div>
+                    <div class="share-user"><h3>Push Day Complete</h3><span>${workoutData.date}</span></div>
+                </div>
+                <div class="share-stats">
+                    <div class="share-stat"><div class="share-stat-value">${(totalVolume/1000).toFixed(1)}k</div><div class="share-stat-label">Total Volume</div></div>
+                    <div class="share-stat"><div class="share-stat-value">${totalSets}</div><div class="share-stat-label">Sets Done</div></div>
+                    <div class="share-stat"><div class="share-stat-value">${workoutData.cardio.calories}</div><div class="share-stat-label">Calories</div></div>
+                    <div class="share-stat"><div class="share-stat-value">${workoutData.cardio.distance}</div><div class="share-stat-label">Km Run</div></div>
+                </div>
+                <div class="share-quote">"Push yourself because no one else is going to do it for you."</div>
+                <div class="share-footer"><div class="share-logo">W</div><span>WorkoutViz</span></div>
+            </div>
+        `;
+
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('overview');
+            return html`
+                <div class="container">
+                    <header class="header">
+                        <div class="header-badge">Workout Complete</div>
+                        <h1 class="header-title">Push Day</h1>
+                        <p class="header-subtitle">${workoutData.date} • 7 Exercises</p>
+                    </header>
+
+                    <div class="stats-grid">
+                        <div class="stat-card"><div class="stat-value">${(totalVolume/1000).toFixed(1)}k</div><div class="stat-label">Volume</div></div>
+                        <div class="stat-card"><div class="stat-value">${totalSets}</div><div class="stat-label">Sets</div></div>
+                        <div class="stat-card"><div class="stat-value">${workoutData.cardio.calories}</div><div class="stat-label">Calories</div></div>
+                    </div>
+
+                    <div class="tabs">
+                        <button class="tab ${activeTab === 'overview' ? 'active' : ''}" onClick=${() => setActiveTab('overview')}>Overview</button>
+                        <button class="tab ${activeTab === 'exercises' ? 'active' : ''}" onClick=${() => setActiveTab('exercises')}>Exercises</button>
+                        <button class="tab ${activeTab === 'share' ? 'active' : ''}" onClick=${() => setActiveTab('share')}>Share</button>
+                    </div>
+
+                    ${activeTab === 'overview' && html`
+                        <div style="animation:fadeInUp 0.5s ease-out">
+                            <div class="section"><${HeartRateChart}/></div>
+                            <div class="section"><${VolumeChart}/></div>
+                            <div class="section"><${IntensityHeatmap}/></div>
+                        </div>
+                    `}
+
+                    ${activeTab === 'exercises' && html`
+                        <div style="animation:fadeInUp 0.5s ease-out">
+                            <div class="section"><${ExerciseFlow}/></div>
+                        </div>
+                    `}
+
+                    ${activeTab === 'share' && html`
+                        <div style="animation:fadeInUp 0.5s ease-out">
+                            <div class="section"><${ShareCard}/></div>
+                            <button class="share-button" onClick=${() => alert('Screenshot saved! Share to your story!')}>📸 Screenshot & Share</button>
+                        </div>
+                    `}
+                </div>
+            `;
+        };
+
+        render(html`<${App}/>`, document.getElementById('app'));
+    </script>
+</body>
+</html>
