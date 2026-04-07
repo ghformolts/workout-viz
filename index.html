@@ -14,288 +14,302 @@
     }
     </script>
     <style>
+        /* ─── Apple Design Tokens ─── */
         :root {
-            /* Apple dark palette */
-            --bg:           #000000;
-            --bg-grouped:   #161617;
-            --bg-card:      #1c1c1e;
-            --bg-elevated:  #2c2c2e;
-            --bg-fill:      rgba(118,118,128,0.12);
-            --bg-fill-2:    rgba(118,118,128,0.18);
+            /* Surfaces — pure iOS dark */
+            --bg:        #000000;
+            --card:      #1c1c1e;
+            --raised:    #2c2c2e;
+            --fill:      rgba(118,118,128,0.18);
 
-            /* Text */
-            --text:         #ffffff;
-            --text-2:       rgba(235,235,245,0.6);
-            --text-3:       rgba(235,235,245,0.3);
-            --separator:    rgba(255,255,255,0.08);
+            /* Text — Apple label scale */
+            --t1:  #ffffff;
+            --t2:  rgba(235,235,245,0.60);
+            --t3:  rgba(235,235,245,0.30);
+            --sep: rgba(60,60,67,0.36);
 
-            /* Apple system colours */
-            --blue:         #2997ff;   /* links / accent on dark */
-            --blue-cta:     #0071e3;   /* CTA buttons */
-            --green:        #30d158;
-            --red:          #ff453a;
-            --orange:       #ff9f0a;
-            --teal:         #5ac8fa;
-            --purple:       #bf5af2;
-            --indigo:       #5e5ce6;
-            --yellow:       #ffd60a;
+            /* iOS system colours — dark mode */
+            --blue:   #0a84ff;
+            --green:  #30d158;
+            --red:    #ff453a;
+            --orange: #ff9f0a;
+            --teal:   #5ac8fa;
+            --indigo: #5e5ce6;
+            --purple: #bf5af2;
         }
 
         * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 
-        html {
-            font-size: 16px;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
+        html { -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
 
         body {
-            font-family: -apple-system, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+            font-family: -apple-system, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', sans-serif;
             background: var(--bg);
-            color: var(--text);
+            color: var(--t1);
             min-height: 100vh;
         }
 
-        #app { min-height: 100vh; }
+        /* ─── Animations ─── */
+        @keyframes up   { from { opacity:0; transform:translateY(16px) } to { opacity:1; transform:none } }
+        @keyframes pop  { 0% { opacity:0; transform:scale(.88) } 65% { transform:scale(1.03) } 100% { opacity:1; transform:none } }
+        @keyframes beat { 0%,100% { transform:scale(1) } 14% { transform:scale(1.22) } 28% { transform:scale(1) } 45% { transform:scale(1.12) } }
+        @keyframes grow { from { transform:scaleY(0) } to { transform:scaleY(1) } }
+        @keyframes draw { to { stroke-dashoffset:0 } }
 
-        /* ── Animations ── */
-        @keyframes fadeUp   { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
-        @keyframes fadeIn   { from { opacity:0; } to { opacity:1; } }
-        @keyframes popIn    { 0% { opacity:0; transform:scale(0.85); } 65% { transform:scale(1.04); } 100% { opacity:1; transform:scale(1); } }
-        @keyframes heartbeat { 0%,100% { transform:scale(1); } 14% { transform:scale(1.18); } 28% { transform:scale(1); } 42% { transform:scale(1.10); } 56% { transform:scale(1); } }
-        @keyframes barGrow  { from { transform:scaleY(0); } to { transform:scaleY(1); } }
-        @keyframes pathDraw { to { stroke-dashoffset:0; } }
-        @keyframes slideIn  { from { opacity:0; transform:translateX(-14px); } to { opacity:1; transform:translateX(0); } }
-        @keyframes shimmer  { 0%,100% { opacity:1; } 50% { opacity:0.45; } }
+        /* ─── Page shell ─── */
+        .page { max-width: 430px; margin: 0 auto; }
 
-        /* ── Layout ── */
-        .page { max-width: 480px; margin: 0 auto; }
-
-        /* ── Hero ── */
+        /* ════════════════════════════════
+           HERO — pure black, no gradient
+        ════════════════════════════════ */
         .hero {
-            padding: 56px 24px 36px;
-            background: linear-gradient(180deg, #111111 0%, #000000 60%);
-            position: relative;
-            overflow: hidden;
-        }
-        .hero::after {
-            content: '';
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            height: 1px;
-            background: var(--separator);
-        }
-        .hero-label {
-            font-size: 13px;
-            font-weight: 600;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: var(--blue);
-            margin-bottom: 10px;
-            animation: fadeUp 0.5s ease-out both;
-        }
-        .hero-title {
-            font-size: 56px;
-            font-weight: 700;
-            letter-spacing: -2.8px;
-            line-height: 1.0;
-            color: var(--text);
-            margin-bottom: 10px;
-            animation: fadeUp 0.5s ease-out 0.06s both;
-        }
-        .hero-sub {
-            font-size: 17px;
-            font-weight: 400;
-            letter-spacing: -0.374px;
-            line-height: 1.47;
-            color: var(--text-2);
-            animation: fadeUp 0.5s ease-out 0.12s both;
+            background: #000;
+            padding: 80px 24px 36px;
+            text-align: center;
         }
 
-        /* ── Stats strip ── */
-        .stats-strip {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            background: var(--bg-card);
-            border-bottom: 1px solid var(--separator);
+        .hero-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: var(--green);
+            margin-bottom: 14px;
+            animation: up .45s ease-out both;
         }
-        .stat-cell {
-            padding: 20px 12px;
-            text-align: center;
-            position: relative;
-            animation: popIn 0.6s cubic-bezier(0.34,1.56,0.64,1) both;
-        }
-        .stat-cell + .stat-cell::before {
+        .hero-eyebrow::before {
             content: '';
-            position: absolute;
-            left: 0; top: 16px; bottom: 16px;
-            width: 1px;
-            background: var(--separator);
+            width: 7px; height: 7px;
+            background: var(--green);
+            border-radius: 50%;
+            animation: beat 2s ease-in-out infinite;
         }
-        .stat-num {
-            font-size: 30px;
+
+        .hero-h1 {
+            font-size: 64px;
             font-weight: 700;
-            letter-spacing: -1.2px;
+            letter-spacing: -3.5px;
+            line-height: .98;
+            margin-bottom: 14px;
+            animation: up .45s ease-out .06s both;
+        }
+
+        .hero-meta {
+            font-size: 15px;
+            color: var(--t2);
+            letter-spacing: -.3px;
+            animation: up .45s ease-out .12s both;
+        }
+
+        /* ─── Stat tiles ─── */
+        .stat-row {
+            display: grid;
+            grid-template-columns: repeat(3,1fr);
+            gap: 10px;
+            padding: 28px 20px 0;
+            animation: up .5s ease-out .18s both;
+        }
+
+        .stat-tile {
+            background: var(--card);
+            border-radius: 18px;
+            padding: 16px 12px 14px;
+            text-align: center;
+        }
+
+        .stat-icon {
+            font-size: 22px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .stat-val {
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: -1px;
             line-height: 1;
             margin-bottom: 5px;
         }
-        .stat-lbl {
-            font-size: 12px;
-            font-weight: 400;
-            color: var(--text-2);
-            letter-spacing: -0.12px;
+
+        .stat-key {
+            font-size: 11px;
+            color: var(--t2);
+            letter-spacing: -.1px;
         }
 
-        /* ── Segmented control ── */
-        .seg-wrap {
-            padding: 14px 16px 12px;
-            background: var(--bg);
+        /* ════════════════════════════════
+           SEGMENTED CONTROL — exact iOS
+        ════════════════════════════════ */
+        .seg-bar {
             position: sticky;
             top: 0;
-            z-index: 10;
-            backdrop-filter: saturate(180%) blur(20px);
-            -webkit-backdrop-filter: saturate(180%) blur(20px);
-            border-bottom: 1px solid var(--separator);
+            z-index: 20;
+            padding: 10px 20px;
+            background: rgba(0,0,0,.82);
+            backdrop-filter: saturate(180%) blur(24px);
+            -webkit-backdrop-filter: saturate(180%) blur(24px);
+            border-bottom: .5px solid var(--sep);
         }
+
         .seg {
             display: flex;
-            background: var(--bg-elevated);
+            background: rgba(118,118,128,.24);  /* exact iOS value */
             border-radius: 9px;
             padding: 2px;
-            gap: 2px;
         }
+
         .seg-btn {
             flex: 1;
-            padding: 7px 4px;
+            padding: 6px 4px;
             border: none;
             border-radius: 7px;
-            font-size: 13px;
-            font-weight: 500;
-            letter-spacing: -0.2px;
-            cursor: pointer;
-            background: transparent;
-            color: var(--text-2);
             font-family: inherit;
-            transition: background 0.18s, color 0.18s, box-shadow 0.18s;
-        }
-        .seg-btn.active {
-            background: rgba(255,255,255,0.13);
-            color: var(--text);
-            box-shadow: 0 1px 4px rgba(0,0,0,0.5);
-        }
-
-        /* ── Content area ── */
-        .content {
-            background: var(--bg-grouped);
-            padding: 20px 16px 60px;
-            min-height: 300px;
-        }
-
-        /* ── Section group ── */
-        .group { margin-bottom: 32px; animation: fadeUp 0.4s ease-out both; }
-        .group-label {
             font-size: 13px;
-            font-weight: 600;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            color: var(--text-3);
-            margin-bottom: 10px;
-            padding-left: 4px;
+            font-weight: 400;
+            letter-spacing: -.2px;
+            color: var(--t2);
+            background: transparent;
+            cursor: pointer;
+            transition: all .15s ease;
         }
 
-        /* ── Card ── */
+        /* Active pill — white, like iOS light segment */
+        .seg-btn.on {
+            background: rgba(255,255,255,.92);
+            color: #000;
+            font-weight: 600;
+            box-shadow:
+                0 3px 8px rgba(0,0,0,.24),
+                0 1px 2px rgba(0,0,0,.16);
+        }
+
+        /* ════════════════════════════════
+           CONTENT
+        ════════════════════════════════ */
+        .content {
+            background: var(--bg);
+            padding: 28px 16px 80px;
+        }
+
+        .sect { margin-bottom: 36px; }
+
+        .sect-label {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: .07em;
+            text-transform: uppercase;
+            color: var(--t3);
+            margin-bottom: 12px;
+            padding: 0 4px;
+        }
+
+        /* ─── Card ─── */
         .card {
-            background: var(--bg-card);
-            border-radius: 16px;
+            background: var(--card);
+            border-radius: 18px;
             overflow: hidden;
         }
-        .card-body { padding: 20px; }
-        .card-title {
-            font-size: 17px;
-            font-weight: 600;
-            letter-spacing: -0.4px;
-            margin-bottom: 3px;
-        }
-        .card-sub {
-            font-size: 13px;
-            color: var(--text-2);
-            letter-spacing: -0.2px;
-            margin-bottom: 18px;
+
+        .cp { padding: 22px; }   /* card pad */
+
+        /* ════════════════════════════════
+           HEART RATE — Apple Health style
+        ════════════════════════════════ */
+        .hr-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 20px;
         }
 
-        /* ── Heart Rate ── */
-        .hr-top {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 18px;
-        }
-        .hr-left { display: flex; align-items: center; gap: 14px; }
-        .hr-icon {
-            width: 44px; height: 44px;
-            background: rgba(255,69,58,0.18);
-            border-radius: 12px;
+        .hr-label-row { display: flex; align-items: center; gap: 10px; }
+
+        .hr-dot {
+            width: 36px; height: 36px;
+            background: rgba(255,69,58,.18);
+            border-radius: 9px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 22px;
-            animation: heartbeat 1.4s ease-in-out infinite;
+            font-size: 18px;
+            animation: beat 1.4s ease-in-out infinite;
             flex-shrink: 0;
         }
-        .hr-label { font-size: 17px; font-weight: 600; letter-spacing: -0.4px; }
-        .hr-sublabel { font-size: 13px; color: var(--text-2); letter-spacing: -0.2px; }
-        .hr-bpm-wrap { text-align: right; }
-        .hr-bpm-val {
-            font-size: 40px;
+
+        .hr-name  { font-size: 16px; font-weight: 600; letter-spacing: -.4px; }
+        .hr-sub   { font-size: 12px; color: var(--t2); margin-top: 1px; }
+
+        .hr-bpm {
+            text-align: right;
+        }
+        .hr-bpm-n {
+            /* Apple Health: big, light-weight, red */
+            font-size: 52px;
             font-weight: 300;
-            letter-spacing: -2px;
+            letter-spacing: -3px;
             line-height: 1;
             color: var(--red);
         }
-        .hr-bpm-unit { font-size: 13px; color: var(--text-2); margin-top: 2px; }
-        .hr-chart { height: 96px; margin-bottom: 16px; }
-        .hr-chart svg { width: 100%; height: 100%; overflow: visible; }
-        .hr-path { fill: none; stroke: url(#hrLine); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1000; stroke-dashoffset: 1000; animation: pathDraw 2.2s ease-out forwards; }
-        .hr-area { fill: url(#hrFill); opacity: 0.22; }
-        .hr-grid {
-            display: grid;
-            grid-template-columns: repeat(4,1fr);
-            gap: 1px;
-            background: var(--separator);
-            border-radius: 12px;
-            overflow: hidden;
-        }
-        .hr-cell {
-            background: var(--bg-elevated);
-            padding: 12px 8px;
-            text-align: center;
-        }
-        .hr-cell-val {
-            font-size: 16px;
-            font-weight: 600;
-            letter-spacing: -0.5px;
-        }
-        .hr-cell-lbl {
-            font-size: 10px;
-            color: var(--text-3);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-top: 3px;
+        .hr-bpm-u {
+            font-size: 14px;
+            color: var(--t2);
+            letter-spacing: -.2px;
+            margin-top: 2px;
         }
 
-        /* ── Volume bars ── */
-        .vol-wrap {
+        /* Chart */
+        .hr-chart { height: 88px; margin-bottom: 18px; }
+        .hr-chart svg { width:100%; height:100%; overflow:visible; }
+        .hr-line {
+            fill: none;
+            stroke: url(#hrGrad);
+            stroke-width: 1.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: draw 2.4s ease-out forwards;
+        }
+        .hr-area { fill: url(#hrFade); }
+
+        /* 4 stat cells */
+        .hr-cells {
+            display: grid;
+            grid-template-columns: repeat(4,1fr);
+            gap: 8px;
+        }
+        .hr-cell {
+            background: var(--raised);
+            border-radius: 11px;
+            padding: 10px 6px;
+            text-align: center;
+        }
+        .hr-cv { font-size: 14px; font-weight: 600; letter-spacing: -.4px; }
+        .hr-ck { font-size: 10px; color: var(--t3); text-transform: uppercase; letter-spacing: .05em; margin-top: 2px; }
+
+        /* ════════════════════════════════
+           VOLUME — bar chart
+        ════════════════════════════════ */
+        .vol-legend {
+            display: flex; gap: 14px;
+            margin-bottom: 16px;
+        }
+        .vol-dot  { width:7px; height:7px; border-radius:50%; }
+        .vol-lg-t { font-size:12px; color:var(--t2); display:flex; align-items:center; gap:5px; }
+
+        .vol-chart {
             display: flex;
             align-items: flex-end;
-            justify-content: space-between;
-            height: 130px;
-            gap: 6px;
-            padding-bottom: 2px;
+            height: 110px;
+            gap: 8px;
         }
-        .vol-group {
+        .vol-grp {
             flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 7px;
+            gap: 6px;
             height: 100%;
         }
         .vol-bars {
@@ -306,219 +320,154 @@
             width: 100%;
             justify-content: center;
         }
-        .vol-bar {
+        .vol-b {
             width: 100%;
-            max-width: 11px;
+            max-width: 10px;
             border-radius: 3px 3px 0 0;
             transform-origin: bottom;
-            animation: barGrow 0.55s cubic-bezier(0.34,1.56,0.64,1) backwards;
-            transition: filter 0.2s;
+            animation: grow .6s cubic-bezier(.34,1.56,.64,1) backwards;
         }
-        .vol-bar:hover { filter: brightness(1.3); }
-        .vol-bar.s1 { background: var(--teal); }
-        .vol-bar.s2 { background: var(--indigo); }
-        .vol-bar.s3 { background: var(--purple); }
-        .vol-lbl {
-            font-size: 10px;
-            color: var(--text-3);
-            text-align: center;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 100%;
-            letter-spacing: 0;
-        }
+        .vol-b.b1 { background: var(--teal);   }
+        .vol-b.b2 { background: var(--indigo); }
+        .vol-b.b3 { background: var(--purple); }
+        .vol-lbl  { font-size:10px; color:var(--t3); text-align:center; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:100%; }
 
-        /* ── Exercise list ── */
-        .ex-list { padding: 0 20px; }
-        .ex-row {
-            display: flex;
-            align-items: flex-start;
-            gap: 14px;
-            padding: 14px 0;
-            border-bottom: 1px solid var(--separator);
-            animation: slideIn 0.4s ease-out backwards;
-        }
-        .ex-row:last-child { border-bottom: none; }
-        .ex-emoji {
-            width: 40px; height: 40px;
-            background: var(--bg-elevated);
-            border-radius: 10px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 19px;
-            flex-shrink: 0;
-            transition: transform 0.2s;
-        }
-        .ex-row:hover .ex-emoji { transform: scale(1.08) rotate(-4deg); }
-        .ex-body { flex: 1; min-width: 0; }
-        .ex-name {
-            font-size: 15px;
-            font-weight: 600;
-            letter-spacing: -0.3px;
-            margin-bottom: 7px;
-        }
-        .ex-chips { display: flex; gap: 5px; flex-wrap: wrap; }
-        .chip {
-            background: var(--bg-fill);
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 500;
-            letter-spacing: -0.1px;
-        }
-        .chip-w { color: var(--blue); }
-        .chip-r { color: var(--text-2); font-size: 11px; }
-
-        /* ── Intensity heatmap ── */
+        /* ════════════════════════════════
+           INTENSITY HEATMAP
+        ════════════════════════════════ */
         .heat-grid {
             display: grid;
             grid-template-columns: repeat(7,1fr);
-            gap: 7px;
-            margin-bottom: 16px;
+            gap: 8px;
+            margin-bottom: 14px;
         }
         .heat-cell {
             aspect-ratio: 1;
-            border-radius: 8px;
-            transition: transform 0.2s, filter 0.2s;
-            box-shadow: rgba(0,0,0,0.22) 0 2px 8px;
+            border-radius: 9px;
+            transition: transform .2s;
         }
-        .heat-cell:hover { transform: scale(1.14); filter: brightness(1.15); }
-        .heat-legend {
+        .heat-cell:hover { transform: scale(1.12); }
+        .heat-legend { display:flex; align-items:center; gap:8px; }
+        .heat-bar { flex:1; height:4px; border-radius:2px; background:linear-gradient(90deg,var(--teal),var(--indigo),var(--orange),var(--red)); }
+        .heat-lbl { font-size:11px; color:var(--t3); }
+
+        /* ════════════════════════════════
+           EXERCISE LIST — iOS table rows
+        ════════════════════════════════ */
+        .ex-list { padding: 0 20px 4px; }
+
+        .ex-list-head {
+            padding: 18px 20px 14px;
+        }
+        .ex-list-title { font-size:17px; font-weight:600; letter-spacing:-.4px; }
+        .ex-list-sub   { font-size:13px; color:var(--t2); margin-top:2px; }
+
+        .ex-row {
             display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .heat-legend-lbl { font-size: 12px; color: var(--text-3); }
-        .heat-legend-bar {
-            flex: 1;
-            height: 5px;
-            border-radius: 3px;
-            background: linear-gradient(90deg, var(--teal), var(--indigo), var(--orange), var(--red));
+            align-items: flex-start;
+            gap: 13px;
+            padding: 12px 0;
+            border-top: .5px solid var(--sep);
+            animation: up .4s ease-out backwards;
         }
 
-        /* ── Share widget ── */
-        .share-widget {
-            background: var(--bg-card);
-            border-radius: 20px;
+        .ex-icon {
+            width: 38px; height: 38px;
+            background: var(--raised);
+            border-radius: 9px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 17px;
+            flex-shrink: 0;
+            transition: transform .2s;
+        }
+        .ex-row:hover .ex-icon { transform: scale(1.1) rotate(-6deg); }
+
+        .ex-body { flex:1; min-width:0; }
+        .ex-name { font-size:15px; font-weight:600; letter-spacing:-.3px; margin-bottom:6px; }
+        .chips   { display:flex; gap:4px; flex-wrap:wrap; }
+        .chip    { background:var(--fill); padding:3px 9px; border-radius:6px; font-size:12px; font-weight:500; }
+        .chip-w  { color:var(--blue); }
+        .chip-r  { color:var(--t2); font-size:11px; }
+        .ex-chev { color:var(--t3); font-size:18px; align-self:center; flex-shrink:0; font-weight:400; }
+
+        /* ════════════════════════════════
+           SHARE WIDGET — iOS lock widget
+        ════════════════════════════════ */
+        .share-w {
+            background: var(--card);
+            border-radius: 22px;
             overflow: hidden;
         }
-        .share-stripe {
-            height: 4px;
-            background: linear-gradient(90deg, var(--red) 0%, var(--orange) 40%, var(--blue) 100%);
-        }
-        .share-inner { padding: 20px; }
+        .share-body { padding: 22px; }
+
         .share-top {
             display: flex;
             align-items: center;
-            gap: 14px;
-            margin-bottom: 20px;
+            gap: 13px;
+            margin-bottom: 22px;
         }
         .share-av {
             width: 44px; height: 44px;
             background: linear-gradient(135deg, var(--orange), var(--red));
             border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            font-size: 20px;
+            font-size: 21px;
             flex-shrink: 0;
         }
-        .share-name {
-            font-size: 17px;
-            font-weight: 600;
-            letter-spacing: -0.4px;
-        }
-        .share-date { font-size: 13px; color: var(--text-2); }
+        .share-n  { font-size:17px; font-weight:600; letter-spacing:-.4px; }
+        .share-dt { font-size:13px; color:var(--t2); margin-top:1px; }
+
         .share-nums {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
             margin-bottom: 20px;
         }
-        .share-num-cell {
-            background: var(--bg-fill);
-            border-radius: 12px;
+        .share-num {
+            background: var(--fill);
+            border-radius: 14px;
             padding: 16px;
         }
-        .share-num-val {
-            font-size: 28px;
-            font-weight: 700;
-            letter-spacing: -1.2px;
-            line-height: 1;
-            margin-bottom: 5px;
-        }
-        .share-num-lbl {
-            font-size: 12px;
-            color: var(--text-2);
-            letter-spacing: -0.1px;
-        }
-        .share-divider {
-            height: 1px;
-            background: var(--separator);
+        .share-nv { font-size:30px; font-weight:700; letter-spacing:-1.4px; line-height:1; margin-bottom:4px; }
+        .share-nk { font-size:12px; color:var(--t2); }
+
+        .share-quote {
+            font-size:15px;
+            font-style:italic;
+            line-height:1.55;
+            letter-spacing:-.25px;
+            color: var(--t2);
+            padding: 16px 0;
+            border-top:  .5px solid var(--sep);
+            border-bottom: .5px solid var(--sep);
             margin-bottom: 16px;
         }
-        .share-quote {
-            font-size: 16px;
-            font-weight: 400;
-            font-style: italic;
-            line-height: 1.5;
-            letter-spacing: -0.3px;
-            color: var(--text-2);
-            margin-bottom: 18px;
-        }
-        .share-footer-row {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-        .share-brand { font-size: 13px; color: var(--text-3); }
-        .share-dot { width: 3px; height: 3px; background: var(--text-3); border-radius: 50%; }
+        .share-foot { text-align:center; font-size:12px; color:var(--t3); letter-spacing:-.1px; }
 
-        /* ── Primary button ── */
-        .btn-primary {
+        /* ─── Primary button — full pill ─── */
+        .btn {
             width: 100%;
-            padding: 16px;
-            background: var(--blue-cta);
+            margin-top: 14px;
+            padding: 15px;
+            background: var(--blue);
             border: none;
             border-radius: 9999px;
             color: #fff;
+            font-family: inherit;
             font-size: 17px;
             font-weight: 600;
-            letter-spacing: -0.3px;
+            letter-spacing: -.3px;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-family: inherit;
-            transition: opacity 0.15s, transform 0.12s;
-            margin-top: 16px;
+            transition: opacity .15s, transform .12s;
         }
-        .btn-primary:hover  { opacity: 0.86; }
-        .btn-primary:active { transform: scale(0.975); opacity: 0.72; }
+        .btn:hover  { opacity: .85; }
+        .btn:active { opacity: .70; transform: scale(.98); }
 
-        /* ── Misc ── */
-        .vol-legend {
-            display: flex;
-            gap: 14px;
-            margin-bottom: 18px;
-            flex-wrap: wrap;
-        }
-        .vol-legend-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 12px;
-            color: var(--text-2);
-        }
-        .vol-legend-dot {
-            width: 8px; height: 8px;
-            border-radius: 50%;
-        }
-
+        /* ─── Responsive ─── */
         @media (max-width: 380px) {
-            .hero-title { font-size: 44px; letter-spacing: -2px; }
-            .hr-grid    { grid-template-columns: repeat(2,1fr); }
-            .vol-bar    { max-width: 9px; }
+            .hero-h1  { font-size: 50px; letter-spacing: -2.8px; }
+            .hr-cells { grid-template-columns: repeat(2,1fr); }
+            .vol-b    { max-width: 8px; }
         }
     </style>
 </head>
@@ -531,17 +480,16 @@ import htm from 'https://esm.sh/htm@3.1.1';
 const html = htm.bind(h);
 
 /* ── Data ── */
-const workout = {
+const w = {
     date: 'Apr 1, 2025',
-    type: 'Push Day',
     exercises: [
-        { name: 'Push Ups',                icon: '💪', sets: [{ weight:'BW', reps:25 }, { weight:'BW', reps:25 }], intensity: 0.60 },
-        { name: 'Chest Press',             icon: '🏋️', sets: [{ weight:'25kg', reps:15, vol:375 }, { weight:'30kg', reps:15, vol:450 }, { weight:'34kg', reps:15, vol:510 }], intensity: 0.85 },
-        { name: 'Cable Fly',               icon: '🎯', sets: [{ weight:'2.5kg', reps:15, vol:37.5 }, { weight:'BW', reps:15, vol:0 }, { weight:'BW', reps:15, vol:0 }], intensity: 0.70 },
-        { name: 'Arnold Press',            icon: '🦾', sets: [{ weight:'10lbs', reps:15, vol:150 }, { weight:'15lbs', reps:15, vol:225 }, { weight:'15lbs', reps:15, vol:225 }], intensity: 0.75 },
-        { name: 'Lateral + Frontal Raises',icon: '⚡', sets: [{ weight:'5lbs', reps:15, vol:75 }, { weight:'10lbs', reps:15, vol:150 }, { weight:'15+10lbs', reps:'8+8', vol:200 }], intensity: 0.80 },
-        { name: 'Tricep Extension',        icon: '🔥', sets: [{ weight:'20lbs', reps:20, vol:400 }, { weight:'25lbs', reps:15, vol:375 }, { weight:'25lbs', reps:15, vol:375 }], intensity: 0.78 },
-        { name: 'Tricep Kickback',         icon: '💫', sets: [{ weight:'10lbs', reps:15, vol:150 }, { weight:'15lbs', reps:15, vol:225 }, { weight:'15lbs', reps:15, vol:225 }], intensity: 0.72 }
+        { name:'Push Ups',                 icon:'💪', sets:[{wt:'BW',   reps:25},{wt:'BW',  reps:25}],              intensity:.60 },
+        { name:'Chest Press',              icon:'🏋️', sets:[{wt:'25kg', reps:15,vol:375},{wt:'30kg',reps:15,vol:450},{wt:'34kg',reps:15,vol:510}], intensity:.85 },
+        { name:'Cable Fly',                icon:'🎯', sets:[{wt:'2.5kg',reps:15,vol:37.5},{wt:'BW',reps:15,vol:0},{wt:'BW',reps:15,vol:0}],       intensity:.70 },
+        { name:'Arnold Press',             icon:'🦾', sets:[{wt:'10lbs',reps:15,vol:150},{wt:'15lbs',reps:15,vol:225},{wt:'15lbs',reps:15,vol:225}], intensity:.75 },
+        { name:'Lateral + Frontal Raises', icon:'⚡', sets:[{wt:'5lbs', reps:15,vol:75},{wt:'10lbs',reps:15,vol:150},{wt:'15+10lbs',reps:'8+8',vol:200}], intensity:.80 },
+        { name:'Tricep Extension',         icon:'🔥', sets:[{wt:'20lbs',reps:20,vol:400},{wt:'25lbs',reps:15,vol:375},{wt:'25lbs',reps:15,vol:375}], intensity:.78 },
+        { name:'Tricep Kickback',          icon:'💫', sets:[{wt:'10lbs',reps:15,vol:150},{wt:'15lbs',reps:15,vol:225},{wt:'15lbs',reps:15,vol:225}], intensity:.72 },
     ],
     cardio: {
         duration:'30:33', distance:2.86, calories:245,
@@ -549,286 +497,259 @@ const workout = {
         hrData:[101,115,128,138,145,152,158,162,165,168,170,172,174,175,177,175,172,168,162,155,148,142,135,128,120,115,110,105,103,101]
     }
 };
-
-const exVol   = ex => ex.sets.reduce((s, x) => s + (x.vol || 0), 0);
-const totVol  = workout.exercises.reduce((s, e) => s + exVol(e), 0);
-const totSets = workout.exercises.reduce((s, e) => s + e.sets.length, 0);
+const totVol  = w.exercises.reduce((a,e) => a + e.sets.reduce((b,s) => b+(s.vol||0), 0), 0);
+const totSets = w.exercises.reduce((a,e) => a + e.sets.length, 0);
 
 /* ── Heart Rate Card ── */
-const HeartRateCard = () => {
-    const d = workout.cardio.hrData;
-    const W = 400, H = 96, P = 8;
-    const lo = Math.min(...d) - 4, hi = Math.max(...d) + 4, rng = hi - lo;
-    const pts = d.map((v, i) => {
-        const x = (i / (d.length - 1)) * (W - P*2) + P;
-        const y = H - ((v - lo) / rng) * (H - P*2) - P;
+const HR = () => {
+    const d = w.cardio.hrData;
+    const W=400, H=88, P=6;
+    const lo=Math.min(...d)-4, hi=Math.max(...d)+4, rng=hi-lo;
+    const pts = d.map((v,i) => {
+        const x=(i/(d.length-1))*(W-P*2)+P;
+        const y=H-((v-lo)/rng)*(H-P*2)-P;
         return `${x},${y}`;
     }).join(' ');
     const area = `${P},${H} ${pts} ${W-P},${H}`;
-
     return html`
         <div class="card">
-            <div class="card-body">
-                <div class="hr-top">
-                    <div class="hr-left">
-                        <div class="hr-icon">❤️</div>
-                        <div>
-                            <div class="hr-label">Cardio Session</div>
-                            <div class="hr-sublabel">Treadmill · Incline ${workout.cardio.incline}%</div>
-                        </div>
-                    </div>
-                    <div class="hr-bpm-wrap">
-                        <div class="hr-bpm-val">${workout.cardio.avgHR}</div>
-                        <div class="hr-bpm-unit">AVG BPM</div>
-                    </div>
+          <div class="cp">
+            <div class="hr-head">
+              <div class="hr-label-row">
+                <div class="hr-dot">❤️</div>
+                <div>
+                  <div class="hr-name">Heart Rate</div>
+                  <div class="hr-sub">Treadmill · ${w.cardio.incline}% incline</div>
                 </div>
-
-                <div class="hr-chart">
-                    <svg viewBox="0 0 ${W} ${H}">
-                        <defs>
-                            <linearGradient id="hrLine" x1="0%" y1="0%" x2="100%" y2="0%">
-                                <stop offset="0%"   stop-color="#5ac8fa"/>
-                                <stop offset="50%"  stop-color="#bf5af2"/>
-                                <stop offset="100%" stop-color="#ff453a"/>
-                            </linearGradient>
-                            <linearGradient id="hrFill" x1="0%" y1="0%" x2="0%" y2="100%">
-                                <stop offset="0%"   stop-color="#ff453a" stop-opacity="0.6"/>
-                                <stop offset="100%" stop-color="#5ac8fa" stop-opacity="0"/>
-                            </linearGradient>
-                        </defs>
-                        <polygon points="${area}" class="hr-area"/>
-                        <polyline points="${pts}"  class="hr-path"/>
-                    </svg>
-                </div>
-
-                <div class="hr-grid">
-                    <div class="hr-cell"><div class="hr-cell-val" style="color:#30d158">${workout.cardio.duration}</div><div class="hr-cell-lbl">Time</div></div>
-                    <div class="hr-cell"><div class="hr-cell-val" style="color:#5ac8fa">${workout.cardio.distance} km</div><div class="hr-cell-lbl">Distance</div></div>
-                    <div class="hr-cell"><div class="hr-cell-val" style="color:#ff9f0a">${workout.cardio.calories}</div><div class="hr-cell-lbl">Cal</div></div>
-                    <div class="hr-cell"><div class="hr-cell-val" style="color:#ff453a">${workout.cardio.maxHR}</div><div class="hr-cell-lbl">Peak</div></div>
-                </div>
+              </div>
+              <div class="hr-bpm">
+                <div class="hr-bpm-n">${w.cardio.avgHR}</div>
+                <div class="hr-bpm-u">AVG BPM</div>
+              </div>
             </div>
-        </div>
-    `;
+
+            <div class="hr-chart">
+              <svg viewBox="0 0 ${W} ${H}">
+                <defs>
+                  <linearGradient id="hrGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%"   stop-color="#5ac8fa"/>
+                    <stop offset="55%"  stop-color="#bf5af2"/>
+                    <stop offset="100%" stop-color="#ff453a"/>
+                  </linearGradient>
+                  <linearGradient id="hrFade" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%"   stop-color="#ff453a" stop-opacity=".35"/>
+                    <stop offset="100%" stop-color="#ff453a" stop-opacity="0"/>
+                  </linearGradient>
+                </defs>
+                <polygon points="${area}" class="hr-area"/>
+                <polyline points="${pts}"  class="hr-line"/>
+              </svg>
+            </div>
+
+            <div class="hr-cells">
+              <div class="hr-cell"><div class="hr-cv" style="color:#30d158">${w.cardio.duration}</div><div class="hr-ck">Time</div></div>
+              <div class="hr-cell"><div class="hr-cv" style="color:#5ac8fa">${w.cardio.distance} km</div><div class="hr-ck">Dist</div></div>
+              <div class="hr-cell"><div class="hr-cv" style="color:#ff9f0a">${w.cardio.calories}</div><div class="hr-ck">Cal</div></div>
+              <div class="hr-cell"><div class="hr-cv" style="color:#ff453a">${w.cardio.maxHR}</div><div class="hr-ck">Peak</div></div>
+            </div>
+          </div>
+        </div>`;
 };
 
 /* ── Volume Card ── */
-const VolumeCard = () => {
-    const exs = workout.exercises.filter(e => e.sets.some(s => s.vol)).slice(0, 6);
-    const maxV = Math.max(...exs.flatMap(e => e.sets.map(s => s.vol || 0)));
+const Vol = () => {
+    const exs = w.exercises.filter(e=>e.sets.some(s=>s.vol)).slice(0,6);
+    const mx  = Math.max(...exs.flatMap(e=>e.sets.map(s=>s.vol||0)));
     return html`
-        <div class="card">
-            <div class="card-body">
-                <div class="card-title">Volume Progression</div>
-                <div class="card-sub">Weight × reps per set</div>
-
-                <div class="vol-legend">
-                    <div class="vol-legend-item"><div class="vol-legend-dot" style="background:#5ac8fa"/><span>Set 1</span></div>
-                    <div class="vol-legend-item"><div class="vol-legend-dot" style="background:#5e5ce6"/><span>Set 2</span></div>
-                    <div class="vol-legend-item"><div class="vol-legend-dot" style="background:#bf5af2"/><span>Set 3</span></div>
-                </div>
-
-                <div class="vol-wrap">
-                    ${exs.map((ex, i) => {
-                        const vols = ex.sets.map(s => s.vol || 0);
-                        return html`
-                            <div class="vol-group" key=${i}>
-                                <div class="vol-bars">
-                                    ${vols.map((v, j) => {
-                                        const ht = v > 0 ? (v / maxV) * 100 : 4;
-                                        return html`<div class="vol-bar s${j+1}" style="height:${ht}%;animation-delay:${(i*3+j)*0.07}s"/>`;
-                                    })}
-                                </div>
-                                <div class="vol-lbl">${ex.name.split(' ')[0]}</div>
-                            </div>
-                        `;
-                    })}
-                </div>
-            </div>
-        </div>
-    `;
+        <div class="card"><div class="cp">
+          <div style="margin-bottom:6px;font-size:17px;font-weight:600;letter-spacing:-.4px">Volume Progression</div>
+          <div style="font-size:13px;color:var(--t2);margin-bottom:18px">Weight × reps per set</div>
+          <div class="vol-legend">
+            <div class="vol-lg-t"><div class="vol-dot" style="background:#5ac8fa"/><span>Set 1</span></div>
+            <div class="vol-lg-t"><div class="vol-dot" style="background:#5e5ce6"/><span>Set 2</span></div>
+            <div class="vol-lg-t"><div class="vol-dot" style="background:#bf5af2"/><span>Set 3</span></div>
+          </div>
+          <div class="vol-chart">
+            ${exs.map((ex,i)=>{
+                const vs=ex.sets.map(s=>s.vol||0);
+                return html`
+                    <div class="vol-grp" key=${i}>
+                      <div class="vol-bars">
+                        ${vs.map((v,j)=>html`
+                            <div class="vol-b b${j+1}"
+                                 style="height:${v>0?(v/mx)*100:4}%;animation-delay:${(i*3+j)*.07}s"/>`)}
+                      </div>
+                      <div class="vol-lbl">${ex.name.split(' ')[0]}</div>
+                    </div>`;
+            })}
+          </div>
+        </div></div>`;
 };
 
 /* ── Intensity Card ── */
-const IntensityCard = () => {
+const Intensity = () => {
     const col = v => {
-        if (v < 0.65) return 'linear-gradient(135deg,#5ac8fa,#2997ff)';
-        if (v < 0.75) return 'linear-gradient(135deg,#5e5ce6,#bf5af2)';
-        if (v < 0.82) return 'linear-gradient(135deg,#ff9f0a,#ffd60a)';
+        if (v < .65) return 'linear-gradient(135deg,#5ac8fa,#2997ff)';
+        if (v < .75) return 'linear-gradient(135deg,#5e5ce6,#bf5af2)';
+        if (v < .82) return 'linear-gradient(135deg,#ff9f0a,#ffd60a)';
         return 'linear-gradient(135deg,#ff453a,#ff6b4a)';
     };
     return html`
-        <div class="card">
-            <div class="card-body">
-                <div class="card-title">Intensity Heatmap</div>
-                <div class="card-sub">Perceived effort by exercise</div>
-                <div class="heat-grid">
-                    ${workout.exercises.map((ex, i) => html`
-                        <div class="heat-cell" key=${i} style="background:${col(ex.intensity)}" title="${ex.name} · ${Math.round(ex.intensity*100)}%"/>
-                    `)}
-                </div>
-                <div class="heat-legend">
-                    <span class="heat-legend-lbl">Low</span>
-                    <div class="heat-legend-bar"/>
-                    <span class="heat-legend-lbl">High</span>
-                </div>
-            </div>
-        </div>
-    `;
+        <div class="card"><div class="cp">
+          <div style="margin-bottom:6px;font-size:17px;font-weight:600;letter-spacing:-.4px">Intensity</div>
+          <div style="font-size:13px;color:var(--t2);margin-bottom:18px">Perceived effort by exercise</div>
+          <div class="heat-grid">
+            ${w.exercises.map((ex,i)=>html`
+                <div class="heat-cell" key=${i}
+                     style="background:${col(ex.intensity)}"
+                     title="${ex.name} · ${Math.round(ex.intensity*100)}%"/>`)}
+          </div>
+          <div class="heat-legend">
+            <span class="heat-lbl">Low</span>
+            <div class="heat-bar"/>
+            <span class="heat-lbl">High</span>
+          </div>
+        </div></div>`;
 };
 
 /* ── Exercises Card ── */
-const ExercisesCard = () => html`
+const Exercises = () => html`
     <div class="card">
-        <div class="card-body" style="padding-bottom:8px">
-            <div class="card-title">Workout Flow</div>
-            <div class="card-sub">7 exercises · ${totSets} sets</div>
-        </div>
-        <div class="ex-list">
-            ${workout.exercises.map((ex, i) => html`
-                <div class="ex-row" key=${i} style="animation-delay:${i*0.07}s">
-                    <div class="ex-emoji">${ex.icon}</div>
-                    <div class="ex-body">
-                        <div class="ex-name">${ex.name}</div>
-                        <div class="ex-chips">
-                            ${ex.sets.map((s, j) => html`
-                                <div class="chip" key=${j}>
-                                    <span class="chip-w">${s.weight}</span>
-                                    <span class="chip-r"> ×${s.reps}</span>
-                                </div>
-                            `)}
-                        </div>
-                    </div>
+      <div class="ex-list-head">
+        <div class="ex-list-title">Workout Flow</div>
+        <div class="ex-list-sub">7 exercises · ${totSets} sets</div>
+      </div>
+      <div class="ex-list">
+        ${w.exercises.map((ex,i)=>html`
+            <div class="ex-row" key=${i} style="animation-delay:${i*.06}s">
+              <div class="ex-icon">${ex.icon}</div>
+              <div class="ex-body">
+                <div class="ex-name">${ex.name}</div>
+                <div class="chips">
+                  ${ex.sets.map((s,j)=>html`
+                      <div class="chip" key=${j}>
+                        <span class="chip-w">${s.wt}</span>
+                        <span class="chip-r"> ×${s.reps}</span>
+                      </div>`)}
                 </div>
-            `)}
+              </div>
+              <div class="ex-chev">›</div>
+            </div>`)}
+      </div>
+      <div style="height:8px"/>
+    </div>`;
+
+/* ── Share Widget ── */
+const Share = () => html`
+    <div class="share-w">
+      <div class="share-body">
+        <div class="share-top">
+          <div class="share-av">💪</div>
+          <div>
+            <div class="share-n">Push Day Complete</div>
+            <div class="share-dt">${w.date}</div>
+          </div>
         </div>
-        <div style="height:8px"/>
+        <div class="share-nums">
+          <div class="share-num">
+            <div class="share-nv" style="color:#0a84ff">${(totVol/1000).toFixed(1)}k</div>
+            <div class="share-nk">Volume</div>
+          </div>
+          <div class="share-num">
+            <div class="share-nv" style="color:#30d158">${totSets}</div>
+            <div class="share-nk">Sets</div>
+          </div>
+          <div class="share-num">
+            <div class="share-nv" style="color:#ff9f0a">${w.cardio.calories}</div>
+            <div class="share-nk">Calories</div>
+          </div>
+          <div class="share-num">
+            <div class="share-nv" style="color:#5ac8fa">${w.cardio.distance}</div>
+            <div class="share-nk">Km Run</div>
+          </div>
+        </div>
+        <div class="share-quote">"Push yourself because no one else is going to do it for you."</div>
+        <div class="share-foot">WorkoutViz · ${w.date}</div>
+      </div>
     </div>
-`;
-
-/* ── Share Card ── */
-const ShareWidget = () => html`
-    <div class="share-widget">
-        <div class="share-stripe"/>
-        <div class="share-inner">
-            <div class="share-top">
-                <div class="share-av">💪</div>
-                <div>
-                    <div class="share-name">Push Day Complete</div>
-                    <div class="share-date">${workout.date}</div>
-                </div>
-            </div>
-
-            <div class="share-nums">
-                <div class="share-num-cell">
-                    <div class="share-num-val" style="color:#2997ff">${(totVol/1000).toFixed(1)}k</div>
-                    <div class="share-num-lbl">Volume (lbs)</div>
-                </div>
-                <div class="share-num-cell">
-                    <div class="share-num-val" style="color:#30d158">${totSets}</div>
-                    <div class="share-num-lbl">Total Sets</div>
-                </div>
-                <div class="share-num-cell">
-                    <div class="share-num-val" style="color:#ff9f0a">${workout.cardio.calories}</div>
-                    <div class="share-num-lbl">Calories</div>
-                </div>
-                <div class="share-num-cell">
-                    <div class="share-num-val" style="color:#5ac8fa">${workout.cardio.distance}</div>
-                    <div class="share-num-lbl">Km Run</div>
-                </div>
-            </div>
-
-            <div class="share-divider"/>
-            <div class="share-quote">"Push yourself because no one else is going to do it for you."</div>
-
-            <div class="share-footer-row">
-                <span class="share-brand">WorkoutViz</span>
-                <div class="share-dot"/>
-                <span class="share-brand">${workout.date}</span>
-            </div>
-        </div>
-    </div>
-`;
+    <button class="btn" onClick=${()=>alert('Share your workout!')}>Share Workout</button>`;
 
 /* ── App ── */
 const App = () => {
     const [tab, setTab] = useState('overview');
-
     return html`
         <div class="page">
 
-            <div class="hero">
-                <div class="hero-label">Workout Complete</div>
-                <h1 class="hero-title">Push Day</h1>
-                <p class="hero-sub">${workout.date} · 7 exercises · ${workout.cardio.duration}</p>
+          <!-- Hero -->
+          <div class="hero">
+            <div class="hero-eyebrow">Workout Complete</div>
+            <h1 class="hero-h1">Push Day</h1>
+            <p class="hero-meta">${w.date} · 7 exercises · ${w.cardio.duration}</p>
+            <div class="stat-row">
+              <div class="stat-tile" style="animation-delay:.2s">
+                <span class="stat-icon">📊</span>
+                <div class="stat-val" style="color:#0a84ff">${(totVol/1000).toFixed(1)}k</div>
+                <div class="stat-key">Volume</div>
+              </div>
+              <div class="stat-tile" style="animation-delay:.26s">
+                <span class="stat-icon">🔁</span>
+                <div class="stat-val" style="color:#30d158">${totSets}</div>
+                <div class="stat-key">Sets</div>
+              </div>
+              <div class="stat-tile" style="animation-delay:.32s">
+                <span class="stat-icon">🔥</span>
+                <div class="stat-val" style="color:#ff9f0a">${w.cardio.calories}</div>
+                <div class="stat-key">Calories</div>
+              </div>
             </div>
+          </div>
 
-            <div class="stats-strip">
-                <div class="stat-cell" style="animation-delay:0.15s">
-                    <div class="stat-num" style="color:#2997ff">${(totVol/1000).toFixed(1)}k</div>
-                    <div class="stat-lbl">Volume</div>
-                </div>
-                <div class="stat-cell" style="animation-delay:0.22s">
-                    <div class="stat-num" style="color:#30d158">${totSets}</div>
-                    <div class="stat-lbl">Sets</div>
-                </div>
-                <div class="stat-cell" style="animation-delay:0.29s">
-                    <div class="stat-num" style="color:#ff9f0a">${workout.cardio.calories}</div>
-                    <div class="stat-lbl">Calories</div>
-                </div>
+          <!-- Segmented control -->
+          <div class="seg-bar">
+            <div class="seg">
+              <button class="seg-btn ${tab==='overview'  ?'on':''}" onClick=${()=>setTab('overview')}>Overview</button>
+              <button class="seg-btn ${tab==='exercises' ?'on':''}" onClick=${()=>setTab('exercises')}>Exercises</button>
+              <button class="seg-btn ${tab==='share'     ?'on':''}" onClick=${()=>setTab('share')}>Share</button>
             </div>
+          </div>
 
-            <div class="seg-wrap">
-                <div class="seg">
-                    <button class="seg-btn ${tab==='overview'  ? 'active' : ''}" onClick=${()=>setTab('overview')}>Overview</button>
-                    <button class="seg-btn ${tab==='exercises' ? 'active' : ''}" onClick=${()=>setTab('exercises')}>Exercises</button>
-                    <button class="seg-btn ${tab==='share'     ? 'active' : ''}" onClick=${()=>setTab('share')}>Share</button>
-                </div>
-            </div>
+          <!-- Content -->
+          <div class="content">
 
-            <div class="content">
+            ${tab==='overview' && html`
+                <div style="animation:up .35s ease-out both">
+                  <div class="sect">
+                    <div class="sect-label">Cardio</div>
+                    <${HR}/>
+                  </div>
+                  <div class="sect">
+                    <div class="sect-label">Strength</div>
+                    <${Vol}/>
+                  </div>
+                  <div class="sect">
+                    <div class="sect-label">Effort</div>
+                    <${Intensity}/>
+                  </div>
+                </div>`}
 
-                ${tab === 'overview' && html`
-                    <div style="animation:fadeUp 0.35s ease-out both">
-                        <div class="group">
-                            <div class="group-label">Cardio</div>
-                            <${HeartRateCard}/>
-                        </div>
-                        <div class="group">
-                            <div class="group-label">Strength</div>
-                            <${VolumeCard}/>
-                        </div>
-                        <div class="group">
-                            <div class="group-label">Effort</div>
-                            <${IntensityCard}/>
-                        </div>
-                    </div>
-                `}
+            ${tab==='exercises' && html`
+                <div style="animation:up .35s ease-out both">
+                  <div class="sect">
+                    <div class="sect-label">All Exercises</div>
+                    <${Exercises}/>
+                  </div>
+                </div>`}
 
-                ${tab === 'exercises' && html`
-                    <div style="animation:fadeUp 0.35s ease-out both">
-                        <div class="group">
-                            <div class="group-label">All Exercises</div>
-                            <${ExercisesCard}/>
-                        </div>
-                    </div>
-                `}
+            ${tab==='share' && html`
+                <div style="animation:up .35s ease-out both">
+                  <div class="sect">
+                    <div class="sect-label">Summary</div>
+                    <${Share}/>
+                  </div>
+                </div>`}
 
-                ${tab === 'share' && html`
-                    <div style="animation:fadeUp 0.35s ease-out both">
-                        <div class="group">
-                            <div class="group-label">Summary Card</div>
-                            <${ShareWidget}/>
-                            <button class="btn-primary" onClick=${()=>alert('Screenshot & share!')}>
-                                Share Workout
-                            </button>
-                        </div>
-                    </div>
-                `}
-
-            </div>
-        </div>
-    `;
+          </div>
+        </div>`;
 };
 
 render(html`<${App}/>`, document.getElementById('app'));
